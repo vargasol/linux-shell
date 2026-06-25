@@ -1,4 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
+echo "Downloading metadata... setting up PRIVATE_IP_RANGES variable"
+eval  $(curl -H "Metadata: true" -s http://169.254.169.254/metadata/instance?api-version=2025-04-07 | jq -r ".compute.userData" | base64 --decode)
+IFS=',' 
+read -a arr <<< $PRIVATE_IP_RANGES
 
 echo "Remove default route..."
 ip route del default
@@ -24,7 +29,7 @@ LAST_OCTET="${IP##*.}"
 PREFIX="${IP%.*}"
 INT_GW="${PREFIX}.$((LAST_OCTET + 1))"
 
-for i in "${@}"; do
+for i in "${arr[@]}"; do
  echo "Adding range: $i"
  ip route add $i via $INT_GW
 done
