@@ -1,0 +1,8 @@
+[Unit]
+After=network.service
+
+[Service]
+ExecStart=/script/init_router.sh
+
+[Install]
+WantedBy=default.target
